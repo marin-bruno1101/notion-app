@@ -1,6 +1,6 @@
 "use client";
 
-import { useMutation, useQuery } from "convex/react";
+import { useMutation } from "convex/react";
 import {
   ChevronsLeft,
   MenuIcon,
@@ -18,11 +18,11 @@ import { cn } from "@/lib/utils";
 import { Item } from "./item";
 import { UserItem } from "./user-item";
 import { toast } from "sonner";
+import { DocumentList } from "./document-list";
 
 export const Navigation = () => {
   const pathname = usePathname();
   const isMobile = useMediaQuery("(max-width: 768px)");
-  const documents = useQuery(api.documents.get);
   const create = useMutation(api.documents.create);
 
   const isResizingRef = useRef(false);
@@ -143,9 +143,7 @@ export const Navigation = () => {
           <Item onClick={handleCreate} label="New page" icon={PlusCircle} />
         </div>
         <div className="mt-4">
-          {documents?.map((document) => (
-            <p key={document._id}>{document.title}</p>
-          ))}
+          <DocumentList />
         </div>
         <div
           onMouseDown={handleMouseDown}
