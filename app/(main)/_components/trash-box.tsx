@@ -10,7 +10,7 @@ import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { Search, Trash, Undo } from "lucide-react";
 import { toast } from "sonner";
-import { ConfirmModal } from "./modals/confirm-modal";
+import { ConfirmModal } from "@/components/modals/confirm-modal";
 
 export const TrashBox = () => {
   const router = useRouter();
