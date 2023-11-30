@@ -17,16 +17,19 @@ import {
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ConfirmModal } from "@/components/modals/confirm-modal";
 
 interface MenuProps {
   documentId: Id<"documents">;
+  archived?: boolean;
 }
 
-export const Menu = ({ documentId }: MenuProps) => {
+export const Menu = ({ documentId, archived }: MenuProps) => {
   const router = useRouter();
   const { user } = useUser();
 
   const archive = useMutation(api.documents.archive);
+  const remove = useMutation(api.documents.remove);
 
   const onArchive = () => {
     const promise = archive({ id: documentId });
@@ -38,6 +41,22 @@ export const Menu = ({ documentId }: MenuProps) => {
     });
 
     router.push("/documents");
+  };
+
+  const onRemove = () => {
+    const promise = remove({ id: documentId });
+
+    toast.promise(promise, {
+      loading: "Deleting note...",
+      success: "Note deleted!",
+      error: "Failed to delete note.",
+    });
+
+    router.push("/documents");
+  };
+
+  const handleDelete = () => {
+    archived ? onRemove() : onArchive();
   };
 
   return (
@@ -53,11 +72,15 @@ export const Menu = ({ documentId }: MenuProps) => {
         alignOffset={8}
         forceMount
       >
-        <DropdownMenuItem onClick={onArchive}>
-          <Trash className="h-4 w-4 mr-2" />
-          Delete
-        </DropdownMenuItem>
-        <DropdownMenuSeparator/>
+        {!archived && (
+          <>
+            <DropdownMenuItem onClick={handleDelete}>
+              <Trash className="h-4 w-4 mr-2" />
+              Delete
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+          </>
+        )}
         <div className="text-xs text-muted-foreground p-2">
           Last edited by: {user?.fullName}
         </div>
@@ -66,6 +89,6 @@ export const Menu = ({ documentId }: MenuProps) => {
   );
 };
 
-Menu.Skeleton = function MenuSkeleton () {
-  return <Skeleton className="h-10 w-10" />
-}
+Menu.Skeleton = function MenuSkeleton() {
+  return <Skeleton className="h-10 w-10" />;
+};
