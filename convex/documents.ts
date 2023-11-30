@@ -360,12 +360,12 @@ export const removeCoverImage = mutation({
     }
 
     if (existingDocument.userId !== userId) {
-      throw new Error("Unauthorized")
+      throw new Error("Unauthorized");
     }
 
     const document = await ctx.db.patch(args.id, {
-      coverImage: undefined
-    })
+      coverImage: undefined,
+    });
 
     return document;
   },
