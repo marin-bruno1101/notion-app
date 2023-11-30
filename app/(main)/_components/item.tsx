@@ -9,7 +9,7 @@ import {
   Plus,
   Trash,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import React from "react";
 import { toast } from "sonner";
 
@@ -53,6 +53,7 @@ export const Item = ({
 }: ItemProps) => {
   const { user } = useUser();
   const router = useRouter();
+  const params = useParams();
   const create = useMutation(api.documents.create);
   const archive = useMutation(api.documents.archive);
 
@@ -60,14 +61,15 @@ export const Item = ({
     event.stopPropagation();
     if (!id) return;
 
-    const promise = archive({ id });
+    const promise = archive({ id }).then(() => {
+      if (params.documentId === id) router.push("/documents");
+    });
 
     toast.promise(promise, {
       loading: "Moving to trash...",
       success: "Note moved to trash!",
       error: "Failed to archive note.",
     });
-
   };
 
   const handleExpand = (
@@ -85,7 +87,7 @@ export const Item = ({
         if (!expanded) {
           onExpand?.();
         }
-        // router.push(`/documents/${documentId}`);
+        router.push(`/documents/${documentId}`)
       }
     );
     toast.promise(promise, {
