@@ -36,7 +36,6 @@ export const Navbar = () => {
             <SignInButton mode="modal">
               <Button size="sm">Get Jotion Free</Button>
             </SignInButton>
-            P
           </>
         )}
         {isAuthenticated && !isLoading && (
