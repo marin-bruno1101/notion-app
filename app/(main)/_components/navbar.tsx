@@ -8,9 +8,9 @@ import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 
 import { Banner } from "./banner";
-import { Title } from "./title";
 import { Menu } from "./menu";
 import { Publish } from "./publish";
+import { Title } from "./title";
 
 interface NavbarProps {
   isCollapsed: boolean;
@@ -53,12 +53,17 @@ export const Navbar = ({ isCollapsed, onResetWidth }: NavbarProps) => {
         <div className="flex items-center justify-between w-full">
           <Title initialData={document} />
           <div className="flex items-center gap-x-2">
-            <Publish initialData={document}/>
+            <Publish initialData={document} />
             <Menu documentId={document._id} archived={document.isArchived} />
           </div>
         </div>
       </nav>
-      {document.isArchived && <Banner documentId={document._id} />}
+      {document.isArchived && (
+        <Banner
+          documentId={document._id}
+          documentCoverImage={document.coverImage}
+        />
+      )}
     </>
   );
 };

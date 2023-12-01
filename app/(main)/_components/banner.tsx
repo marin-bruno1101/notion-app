@@ -2,24 +2,33 @@
 
 import { useMutation } from "convex/react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
+import { ConfirmModal } from "@/components/modals/confirm-modal";
+import { Button } from "@/components/ui/button";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
-import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { ConfirmModal } from "@/components/modals/confirm-modal";
+import { useEdgeStore } from "@/lib/edgestore";
 
 interface BannerProps {
   documentId: Id<"documents">;
+  documentCoverImage: string | undefined;
 }
 
-export const Banner = ({ documentId }: BannerProps) => {
+export const Banner = ({ documentId, documentCoverImage }: BannerProps) => {
   const router = useRouter();
+  const { edgestore } = useEdgeStore();
 
   const remove = useMutation(api.documents.remove);
   const restore = useMutation(api.documents.restore);
 
   const onRemove = () => {
+    if (documentCoverImage !== undefined) {
+      edgestore.publicFiles.delete({
+        url: documentCoverImage,
+      });
+    }
+
     const promise = remove({ id: documentId });
 
     toast.promise(promise, {

@@ -1,16 +1,17 @@
 "use client";
 
 import { useMutation, useQuery } from "convex/react";
+import { Search, Trash, Undo } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import React, { useState } from "react";
+import { toast } from "sonner";
 
+import { ConfirmModal } from "@/components/modals/confirm-modal";
 import { Spinner } from "@/components/spinner";
 import { Input } from "@/components/ui/input";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
-import { Search, Trash, Undo } from "lucide-react";
-import { toast } from "sonner";
-import { ConfirmModal } from "@/components/modals/confirm-modal";
+import { useEdgeStore } from "@/lib/edgestore";
 
 export const TrashBox = () => {
   const router = useRouter();
@@ -18,6 +19,7 @@ export const TrashBox = () => {
   const documents = useQuery(api.documents.getTrash);
   const restore = useMutation(api.documents.restore);
   const remove = useMutation(api.documents.remove);
+  const { edgestore } = useEdgeStore();
 
   const [search, setSearch] = useState("");
 
@@ -43,7 +45,16 @@ export const TrashBox = () => {
     });
   };
 
-  const onRemove = (documentId: Id<"documents">) => {
+  const onRemove = (
+    documentId: Id<"documents">,
+    documentCoverUrl: string | undefined
+  ) => {
+    if (documentCoverUrl !== undefined) {
+      edgestore.publicFiles.delete({
+        url: documentCoverUrl,
+      });
+    }
+
     const promise = remove({ id: documentId });
 
     toast.promise(promise, {
@@ -96,7 +107,9 @@ export const TrashBox = () => {
               >
                 <Undo className="h-4 w-4 text-muted-foreground" />
               </div>
-              <ConfirmModal onConfirm={() => onRemove(document._id)}>
+              <ConfirmModal
+                onConfirm={() => onRemove(document._id, document.coverImage)}
+              >
                 <div
                   role="button"
                   className="rounded-sm p-2 hover:bg-neutral-200 dark:hover:bg-neutral-600"
